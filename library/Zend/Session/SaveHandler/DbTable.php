@@ -49,25 +49,23 @@ require_once 'Zend/Config.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Session_SaveHandler_DbTable
-    extends Zend_Db_Table_Abstract
-    implements Zend_Session_SaveHandler_Interface
+class Zend_Session_SaveHandler_DbTable extends Zend_Db_Table_Abstract implements Zend_Session_SaveHandler_Interface
 {
-    const PRIMARY_ASSIGNMENT                   = 'primaryAssignment';
+    const PRIMARY_ASSIGNMENT = 'primaryAssignment';
     const PRIMARY_ASSIGNMENT_SESSION_SAVE_PATH = 'sessionSavePath';
-    const PRIMARY_ASSIGNMENT_SESSION_NAME      = 'sessionName';
-    const PRIMARY_ASSIGNMENT_SESSION_ID        = 'sessionId';
+    const PRIMARY_ASSIGNMENT_SESSION_NAME = 'sessionName';
+    const PRIMARY_ASSIGNMENT_SESSION_ID = 'sessionId';
 
-    const MODIFIED_COLUMN   = 'modifiedColumn';
-    const LIFETIME_COLUMN   = 'lifetimeColumn';
-    const DATA_COLUMN       = 'dataColumn';
+    const MODIFIED_COLUMN = 'modifiedColumn';
+    const LIFETIME_COLUMN = 'lifetimeColumn';
+    const DATA_COLUMN = 'dataColumn';
 
-    const LIFETIME          = 'lifetime';
+    const LIFETIME = 'lifetime';
     const OVERRIDE_LIFETIME = 'overrideLifetime';
 
-    const PRIMARY_TYPE_NUM         = 'PRIMARY_TYPE_NUM';
-    const PRIMARY_TYPE_PRIMARYNUM  = 'PRIMARY_TYPE_PRIMARYNUM';
-    const PRIMARY_TYPE_ASSOC       = 'PRIMARY_TYPE_ASSOC';
+    const PRIMARY_TYPE_NUM = 'PRIMARY_TYPE_NUM';
+    const PRIMARY_TYPE_PRIMARYNUM = 'PRIMARY_TYPE_PRIMARYNUM';
+    const PRIMARY_TYPE_ASSOC = 'PRIMARY_TYPE_ASSOC';
     const PRIMARY_TYPE_WHERECLAUSE = 'PRIMARY_TYPE_WHERECLAUSE';
 
     /**
@@ -172,7 +170,7 @@ class Zend_Session_SaveHandler_DbTable
 
             throw new Zend_Session_SaveHandler_Exception(
                 '$config must be an instance of Zend_Config or array of key/value pairs containing '
-              . 'configuration options for Zend_Session_SaveHandler_DbTable and Zend_Db_Table_Abstract.');
+                . 'configuration options for Zend_Session_SaveHandler_DbTable and Zend_Db_Table_Abstract.');
         }
 
         foreach ($config as $key => $value) {
@@ -290,7 +288,7 @@ class Zend_Session_SaveHandler_DbTable
     public function open($save_path, $name)
     {
         $this->_sessionSavePath = $save_path;
-        $this->_sessionName     = $name;
+        $this->_sessionName = $name;
 
         return true;
     }
@@ -340,7 +338,7 @@ class Zend_Session_SaveHandler_DbTable
         $return = false;
 
         $data = array($this->_modifiedColumn => time(),
-                      $this->_dataColumn     => (string) $data);
+            $this->_dataColumn => (string) $data);
 
         $rows = call_user_func_array(array(&$this, 'find'), $this->_getPrimary($id));
 
@@ -358,7 +356,9 @@ class Zend_Session_SaveHandler_DbTable
             }
         }
 
-        return $return;
+        // return $return;
+        // since PHP 7.1 we need to always return true for the session write handler:
+        return true;
     }
 
     /**
@@ -387,8 +387,8 @@ class Zend_Session_SaveHandler_DbTable
     public function gc($maxlifetime)
     {
         $this->delete($this->getAdapter()->quoteIdentifier($this->_modifiedColumn, true) . ' + '
-                    . $this->getAdapter()->quoteIdentifier($this->_lifetimeColumn, true) . ' < '
-                    . $this->getAdapter()->quote(time()));
+            . $this->getAdapter()->quoteIdentifier($this->_lifetimeColumn, true) . ' < '
+            . $this->getAdapter()->quote(time()));
 
         return true;
     }
@@ -456,7 +456,7 @@ class Zend_Session_SaveHandler_DbTable
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Value for configuration option '" . self::PRIMARY_ASSIGNMENT . "' must have an assignment "
-              . "for each session table primary key.");
+                . "for each session table primary key.");
         } else if (!in_array(self::PRIMARY_ASSIGNMENT_SESSION_ID, $this->_primaryAssignment)) {
             /**
              * @see Zend_Session_SaveHandler_Exception
@@ -465,7 +465,7 @@ class Zend_Session_SaveHandler_DbTable
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Value for configuration option '" . self::PRIMARY_ASSIGNMENT . "' must have an assignment "
-              . "for the session id ('" . self::PRIMARY_ASSIGNMENT_SESSION_ID . "').");
+                . "for the session id ('" . self::PRIMARY_ASSIGNMENT_SESSION_ID . "').");
         }
     }
 
@@ -485,7 +485,7 @@ class Zend_Session_SaveHandler_DbTable
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Configuration must define '" . self::MODIFIED_COLUMN . "' which names the "
-              . "session table last modification time column.");
+                . "session table last modification time column.");
         } else if ($this->_lifetimeColumn === null) {
             /**
              * @see Zend_Session_SaveHandler_Exception
@@ -494,7 +494,7 @@ class Zend_Session_SaveHandler_DbTable
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Configuration must define '" . self::LIFETIME_COLUMN . "' which names the "
-              . "session table lifetime column.");
+                . "session table lifetime column.");
         } else if ($this->_dataColumn === null) {
             /**
              * @see Zend_Session_SaveHandler_Exception
@@ -503,7 +503,7 @@ class Zend_Session_SaveHandler_DbTable
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Configuration must define '" . self::DATA_COLUMN . "' which names the "
-              . "session table data column.");
+                . "session table data column.");
         }
     }
 
@@ -549,7 +549,7 @@ class Zend_Session_SaveHandler_DbTable
                     break;
                 case self::PRIMARY_TYPE_WHERECLAUSE:
                     $primaryArray[] = $this->getAdapter()->quoteIdentifier($primary, true) . ' = '
-                                    . $this->getAdapter()->quote($value);
+                    . $this->getAdapter()->quote($value);
                     break;
                 case self::PRIMARY_TYPE_NUM:
                 default:
@@ -586,6 +586,6 @@ class Zend_Session_SaveHandler_DbTable
      */
     protected function _getExpirationTime(Zend_Db_Table_Row_Abstract $row)
     {
-        return (int) $row->{$this->_modifiedColumn} + $this->_getLifetime($row);
+        return (int) $row->{$this->_modifiedColumn}+$this->_getLifetime($row);
     }
 }
