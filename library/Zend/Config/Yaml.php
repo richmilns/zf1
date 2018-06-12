@@ -135,7 +135,7 @@ class Zend_Config_Yaml extends Zend_Config
             throw new Zend_Config_Exception('Filename is not set');
         }
 
-        $ignoreConstants    = $staticIgnoreConstants = self::ignoreConstants();
+        $ignoreConstants = $staticIgnoreConstants = self::ignoreConstants();
         $allowModifications = false;
         if (is_bool($options)) {
             $allowModifications = $options;
@@ -202,8 +202,8 @@ class Zend_Config_Yaml extends Zend_Config
                 if (!isset($config[$sectionName])) {
                     require_once 'Zend/Config/Exception.php';
                     throw new Zend_Config_Exception(sprintf(
-                        'Section "%s" cannot be found', 
-                        implode(' ', (array)$section)
+                        'Section "%s" cannot be found',
+                        implode(' ', (array) $section)
                     ));
                 }
 
@@ -214,8 +214,8 @@ class Zend_Config_Yaml extends Zend_Config
             if (!isset($config[$section])) {
                 require_once 'Zend/Config/Exception.php';
                 throw new Zend_Config_Exception(sprintf(
-                    'Section "%s" cannot be found', 
-                    implode(' ', (array)$section)
+                    'Section "%s" cannot be found',
+                    implode(' ', (array) $section)
                 ));
             }
 
@@ -247,7 +247,7 @@ class Zend_Config_Yaml extends Zend_Config
             throw new Zend_Config_Exception(sprintf('Section "%s" cannot be found', $section));
         }
 
-        $thisSection  = $data[$section];
+        $thisSection = $data[$section];
 
         if (is_array($thisSection) && isset($thisSection[self::EXTENDS_NAME])) {
             $this->_assertValidExtend($section, $thisSection[self::EXTENDS_NAME]);
@@ -287,9 +287,11 @@ class Zend_Config_Yaml extends Zend_Config
      */
     protected static function _decodeYaml($currentIndent, &$lines)
     {
-        $config   = array();
+        $config = array();
         $inIndent = false;
-        while (list($n, $line) = each($lines)) {
+        // PHP 7.2 each() is deprecated:
+        // while (list($n, $line) = each($lines)) {
+        foreach ($lines as $n => $line) {
             $lineno = $n + 1;
 
             $line = rtrim(preg_replace("/#.*$/", "", $line));
@@ -313,7 +315,7 @@ class Zend_Config_Yaml extends Zend_Config
 
             if (!$inIndent) {
                 $currentIndent = $indent;
-                $inIndent      = true;
+                $inIndent = true;
             }
 
             if (preg_match("/(?!-)([\w\-]+):\s*(.*)/", $line, $m)) {
@@ -363,10 +365,10 @@ class Zend_Config_Yaml extends Zend_Config
 
         // remove quotes from string.
         if ('"' == $value['0']) {
-            if ('"' == $value[count($value) -1]) {
+            if ('"' == $value[count($value) - 1]) {
                 $value = substr($value, 1, -1);
             }
-        } elseif ('\'' == $value['0'] && '\'' == $value[count($value) -1]) {
+        } elseif ('\'' == $value['0'] && '\'' == $value[count($value) - 1]) {
             $value = strtr($value, array("''" => "'", "'" => ''));
         }
 

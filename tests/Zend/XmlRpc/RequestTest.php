@@ -24,7 +24,6 @@ require_once 'Zend/XmlRpc/Request.php';
 require_once 'Zend/XmlRpc/Value/Nil.php';
 require_once 'Zend/XmlRpc/Value/String.php';
 
-
 /**
  * Test case for Zend_XmlRpc_Request
  *
@@ -75,7 +74,6 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('test/method', $this->_request->getMethod());
     }
 
-
     /**
      * __construct() test
      */
@@ -91,7 +89,6 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($method, $r->getMethod());
         $this->assertEquals($params, $r->getParams());
     }
-
 
     /**
      * addParam()/getParams() test
@@ -125,7 +122,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         $xml = $this->_request->saveXml();
         $sxl = new SimpleXMLElement($xml);
         $param = $sxl->params->param->value;
-        $type  = 'dateTime.iso8601';
+        $type = 'dateTime.iso8601';
         $this->assertTrue(isset($param->{$type}), var_export($param, 1));
         $this->assertEquals($time, strtotime((string) $param->{$type}));
     }
@@ -138,7 +135,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         $params = array(
             'string1',
             true,
-            array('one', 'two')
+            array('one', 'two'),
         );
         $this->_request->setParams($params);
         $returned = $this->_request->getParams();
@@ -146,7 +143,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
 
         $params = array(
             'string2',
-            array('two', 'one')
+            array('two', 'one'),
         );
         $this->_request->setParams($params);
         $returned = $this->_request->getParams();
@@ -175,13 +172,12 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         $mName = $mCall->appendChild($dom->createElement('methodName', 'do.Something'));
         $params = $mCall->appendChild($dom->createElement('params'));
         $param1 = $params->appendChild($dom->createElement('param'));
-            $value1 = $param1->appendChild($dom->createElement('value'));
-            $value1->appendChild($dom->createElement('string', 'string1'));
+        $value1 = $param1->appendChild($dom->createElement('value'));
+        $value1->appendChild($dom->createElement('string', 'string1'));
 
         $param2 = $params->appendChild($dom->createElement('param'));
-            $value2 = $param2->appendChild($dom->createElement('value'));
-            $value2->appendChild($dom->createElement('boolean', 1));
-
+        $value2 = $param2->appendChild($dom->createElement('value'));
+        $value2->appendChild($dom->createElement('boolean', 1));
 
         $xml = $dom->saveXml();
 
@@ -226,9 +222,9 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
     {
         $this->assertFalse($this->_request->loadXml(
             '<methodCall>'
-          . '<methodName>foo</methodName>'
-          . '<params><param/><param/><param><foo/></param></params>'
-          . '</methodCall>'));
+            . '<methodName>foo</methodName>'
+            . '<params><param/><param/><param><foo/></param></params>'
+            . '</methodCall>'));
         $this->assertTrue($this->_request->isFault());
         $this->assertSame(633, $this->_request->getFault()->getCode());
         $this->assertSame(
@@ -240,9 +236,9 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
     {
         $this->assertFalse($this->_request->loadXml(
             '<methodCall>'
-          . '<methodName>foo</methodName>'
-          . '<params><param><value><foo/></value></param></params>'
-          . '</methodCall>'));
+            . '<methodName>foo</methodName>'
+            . '<params><param><value><foo/></value></param></params>'
+            . '</methodCall>'));
         $this->assertTrue($this->_request->isFault());
         $this->assertSame(636, $this->_request->getFault()->getCode());
         $this->assertSame(
@@ -288,14 +284,18 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
 
         $result = $sx->xpath('//methodName');
         $count = 0;
-        while (list( , $node) = each($result)) {
+        // PHP 7.2 each() is deprecated:
+        // while (list(, $node) = each($result)) {
+        foreach ($result as $node) {
             ++$count;
         }
         $this->assertEquals(1, $count, $xml);
 
         $result = $sx->xpath('//params');
         $count = 0;
-        while (list( , $node) = each($result)) {
+        // PHP 7.2 each() is deprecated:
+        // while (list(, $node) = each($result)) {
+        foreach ($result as $node) {
             ++$count;
         }
         $this->assertEquals(1, $count, $xml);
@@ -304,7 +304,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
             $methodName = (string) $sx->methodName;
             $params = array(
                 (string) $sx->params->param[0]->value->string,
-                (bool) $sx->params->param[1]->value->boolean
+                (bool) $sx->params->param[1]->value->boolean,
             );
         } catch (Exception $e) {
             $this->fail('One or more inconsistencies parsing generated XML: ' . $e->getMessage());
@@ -352,9 +352,9 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
 
     /**
      * @group ZF-12293
-+     *
-+     * Test should remain, but is defunct since DOCTYPE presence should return FALSE
-+     * from loadXml()
+    +     *
+    +     * Test should remain, but is defunct since DOCTYPE presence should return FALSE
+    +     * from loadXml()
      */
     public function testDoesNotAllowExternalEntities()
     {
@@ -368,10 +368,10 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         }
     }
 
-     public function testShouldDisallowsDoctypeInRequestXmlAndReturnFalseOnLoading()
-     {
-         $payload = file_get_contents(dirname(__FILE__) . '/_files/ZF12293-request.xml');
-         $payload = sprintf($payload, 'file://' . realpath(dirname(__FILE__) . '/_files/ZF12293-payload.txt'));
-         $this->assertFalse($this->_request->loadXml($payload));
-     }
+    public function testShouldDisallowsDoctypeInRequestXmlAndReturnFalseOnLoading()
+    {
+        $payload = file_get_contents(dirname(__FILE__) . '/_files/ZF12293-request.xml');
+        $payload = sprintf($payload, 'file://' . realpath(dirname(__FILE__) . '/_files/ZF12293-payload.txt'));
+        $this->assertFalse($this->_request->loadXml($payload));
+    }
 }
