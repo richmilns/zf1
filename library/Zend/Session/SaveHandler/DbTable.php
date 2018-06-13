@@ -313,7 +313,8 @@ class Zend_Session_SaveHandler_DbTable extends Zend_Db_Table_Abstract implements
     {
         $return = '';
 
-        $rows = call_user_func_array(array(&$this, 'find'), $this->_getPrimary($id));
+        // $rows = call_user_func_array(array(&$this, 'find'), $this->_getPrimary($id));
+        $rows = $this->find($this->_getPrimary($id, self::PRIMARY_TYPE_ASSOC));
 
         if (count($rows)) {
             if ($this->_getExpirationTime($row = $rows->current()) > time()) {
@@ -340,7 +341,8 @@ class Zend_Session_SaveHandler_DbTable extends Zend_Db_Table_Abstract implements
         $data = array($this->_modifiedColumn => time(),
             $this->_dataColumn => (string) $data);
 
-        $rows = call_user_func_array(array(&$this, 'find'), $this->_getPrimary($id));
+        // $rows = call_user_func_array(array(&$this, 'find'), $this->_getPrimary($id, self::PRIMARY_TYPE_ASSOC));
+        $rows = $this->find($this->_getPrimary($id, self::PRIMARY_TYPE_ASSOC));
 
         if (count($rows)) {
             $data[$this->_lifetimeColumn] = $this->_getLifetime($rows->current());
