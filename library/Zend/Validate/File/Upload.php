@@ -37,39 +37,39 @@ class Zend_Validate_File_Upload extends Zend_Validate_Abstract
     /**@#+
      * @const string Error constants
      */
-    const INI_SIZE       = 'fileUploadErrorIniSize';
-    const FORM_SIZE      = 'fileUploadErrorFormSize';
-    const PARTIAL        = 'fileUploadErrorPartial';
-    const NO_FILE        = 'fileUploadErrorNoFile';
-    const NO_TMP_DIR     = 'fileUploadErrorNoTmpDir';
-    const CANT_WRITE     = 'fileUploadErrorCantWrite';
-    const EXTENSION      = 'fileUploadErrorExtension';
-    const ATTACK         = 'fileUploadErrorAttack';
+    const INI_SIZE = 'fileUploadErrorIniSize';
+    const FORM_SIZE = 'fileUploadErrorFormSize';
+    const PARTIAL = 'fileUploadErrorPartial';
+    const NO_FILE = 'fileUploadErrorNoFile';
+    const NO_TMP_DIR = 'fileUploadErrorNoTmpDir';
+    const CANT_WRITE = 'fileUploadErrorCantWrite';
+    const EXTENSION = 'fileUploadErrorExtension';
+    const ATTACK = 'fileUploadErrorAttack';
     const FILE_NOT_FOUND = 'fileUploadErrorFileNotFound';
-    const UNKNOWN        = 'fileUploadErrorUnknown';
+    const UNKNOWN = 'fileUploadErrorUnknown';
     /**@#-*/
 
     /**
      * @var array Error message templates
      */
-    protected $_messageTemplates = array(
-        self::INI_SIZE       => "File '%value%' exceeds the defined ini size",
-        self::FORM_SIZE      => "File '%value%' exceeds the defined form size",
-        self::PARTIAL        => "File '%value%' was only partially uploaded",
-        self::NO_FILE        => "File '%value%' was not uploaded",
-        self::NO_TMP_DIR     => "No temporary directory was found for file '%value%'",
-        self::CANT_WRITE     => "File '%value%' can't be written",
-        self::EXTENSION      => "A PHP extension returned an error while uploading the file '%value%'",
-        self::ATTACK         => "File '%value%' was illegally uploaded. This could be a possible attack",
+    protected $_messageTemplates = [
+        self::INI_SIZE => "File '%value%' exceeds the defined ini size",
+        self::FORM_SIZE => "File '%value%' exceeds the defined form size",
+        self::PARTIAL => "File '%value%' was only partially uploaded",
+        self::NO_FILE => "File '%value%' was not uploaded",
+        self::NO_TMP_DIR => "No temporary directory was found for file '%value%'",
+        self::CANT_WRITE => "File '%value%' can't be written",
+        self::EXTENSION => "A PHP extension returned an error while uploading the file '%value%'",
+        self::ATTACK => "File '%value%' was illegally uploaded. This could be a possible attack",
         self::FILE_NOT_FOUND => "File '%value%' was not found",
-        self::UNKNOWN        => "Unknown error while uploading file '%value%'"
-    );
+        self::UNKNOWN => "Unknown error while uploading file '%value%'",
+    ];
 
     /**
      * Internal array of files
      * @var array
      */
-    protected $_files = array();
+    protected $_files = [];
 
     /**
      * Sets validator options
@@ -80,7 +80,7 @@ class Zend_Validate_File_Upload extends Zend_Validate_Abstract
      *
      * @param array|Zend_Config $files Array of files in syntax of Zend_File_Transfer
      */
-    public function __construct($files = array())
+    public function __construct($files = [])
     {
         if ($files instanceof Zend_Config) {
             $files = $files->toArray();
@@ -99,7 +99,7 @@ class Zend_Validate_File_Upload extends Zend_Validate_Abstract
     public function getFiles($file = null)
     {
         if ($file !== null) {
-            $return = array();
+            $return = [];
             foreach ($this->_files as $name => $content) {
                 if ($name === $file) {
                     $return[$file] = $this->_files[$name];
@@ -127,7 +127,7 @@ class Zend_Validate_File_Upload extends Zend_Validate_Abstract
      * @param  array $files The files to check in syntax of Zend_File_Transfer
      * @return Zend_Validate_File_Upload Provides a fluent interface
      */
-    public function setFiles($files = array())
+    public function setFiles($files = [])
     {
         if (count($files) === 0) {
             $this->_files = $_FILES;
@@ -137,10 +137,10 @@ class Zend_Validate_File_Upload extends Zend_Validate_Abstract
 
         // see ZF-10738
         if (is_null($this->_files)) {
-            $this->_files = array();
+            $this->_files = [];
         }
 
-        foreach($this->_files as $file => $content) {
+        foreach ($this->_files as $file => $content) {
             if (!isset($content['error'])) {
                 unset($this->_files[$file]);
             }
@@ -182,7 +182,7 @@ class Zend_Validate_File_Upload extends Zend_Validate_Abstract
 
         foreach ($files as $file => $content) {
             $this->_value = $file;
-            switch($content['error']) {
+            switch ($content['error']) {
                 case 0:
                     if (!is_uploaded_file($content['tmp_name'])) {
                         $this->_throw($content, self::ATTACK);
@@ -222,8 +222,7 @@ class Zend_Validate_File_Upload extends Zend_Validate_Abstract
                     break;
             }
         }
-
-        if (count($this->_messages) > 0) {
+        if (is_iterable($this->_messages) and count($this->_messages) > 0) {
             return false;
         } else {
             return true;
