@@ -190,7 +190,7 @@ class Zend_Registry extends ArrayObject
      * @param array $array data array
      * @param integer $flags ArrayObject flags
      */
-    public function __construct($array = array(), $flags = parent::ARRAY_AS_PROPS)
+    public function __construct($array = [], $flags = parent::ARRAY_AS_PROPS)
     {
         parent::__construct($array, $flags);
     }
@@ -203,7 +203,10 @@ class Zend_Registry extends ArrayObject
      */
     public function offsetExists($index)
     {
-        return array_key_exists($index, $this);
+        // using array_key_exists with an object is deprecated in PHP 7.4+
+        // the original PHP bug that this was a workaround for appears to be fixed in current versions
+        // so we can default to using that
+        return (phpversion() > 7.3) ? parent::offsetExists($index) : array_key_exists($index, $this);
     }
 
 }
